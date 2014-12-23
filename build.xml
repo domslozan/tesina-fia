@@ -31,6 +31,7 @@
     
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}">
+      <!-- <compilerarg value="-Xlint:unchecked"/> -->
       <classpath>
 	<!-- <pathelement path="${classpath}" /> -->
 	<fileset refid="jarfiles" />
@@ -44,7 +45,7 @@
     <!-- <mkdir dir="${dist}/lib"/> -->
 
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="${dist}/Tesina_FIA-${DSTAMP}.jar" basedir="${build}">
+    <jar jarfile="${dist}/Tesina_FIA.jar" basedir="${build}">
       <zipgroupfileset refid="jarfiles">
       </zipgroupfileset>
       <manifest>
