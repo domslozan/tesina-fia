@@ -1,0 +1,9 @@
+Tesina FIA
+
+Requisiti:
+  - jdk 1.6
+  - jgrapht 0.8 (https://github.com/jgrapht/jgrapht)
+
+Per compilare ed eseguire:
+  $ ant
+  $ java -jar dist/Tesina_FIA.jar

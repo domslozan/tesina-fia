@@ -1,0 +1,63 @@
+<project name="Tesina_FIA" default="dist">
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+
+  <condition property="jarpath" value="/usr/share/java/">
+    <os family="unix" />
+  </condition>
+  <condition property="jarpath" value="./">
+    <os family="windows" />
+  </condition>
+
+  <fail unless="jarpath">
+    No jarpath set!
+  </fail>
+
+  <fileset id="jarfiles" dir="${jarpath}">
+      <include name="jgrapht0.8.jar" />
+  </fileset>
+ 
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}">
+      <classpath>
+	<!-- <pathelement path="${classpath}" /> -->
+	<fileset refid="jarfiles" />
+      </classpath>
+    </javac>
+  </target>
+  
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <!-- <mkdir dir="${dist}/lib"/> -->
+
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/Tesina_FIA-${DSTAMP}.jar" basedir="${build}">
+      <zipgroupfileset refid="jarfiles">
+      </zipgroupfileset>
+      <manifest>
+	<attribute name="Main-Class" value="Main" />
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
+
