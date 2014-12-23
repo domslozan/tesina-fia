@@ -17,5 +17,5 @@ $ java -jar dist/Tesina_FIA.jar
 ```
 
 Le librerie di terze parti vengono cercate dal compilatore su percorsi diversi a seconda del sistema operativo:
-- su windows in tesina-fia/third-party-jars
-- su linux in /usr/share/java
+- su windows in `tesina-fia/third-party-jars`
+- su linux in `/usr/share/java`
