@@ -1,9 +1,21 @@
-Tesina FIA
+# Tesina FIA
 
-Requisiti:
-  - jdk 1.6
-  - jgrapht 0.8 (https://github.com/jgrapht/jgrapht)
+## Requisiti:
+- jdk 1.6 (io uso openjdk)
+- ant 1.8.2
+- [jgrapht 0.8.3](https://github.com/jgrapht/jgrapht)
 
-Per compilare ed eseguire:
-  $ ant
-  $ java -jar dist/Tesina_FIA.jar
+## Compilazione
+Per compilare e costruire il file jar finale si può usare ant:
+```
+$ cd /path/to/tesina-fia
+$ ant
+```
+Per eseguire il jar:
+```
+$ java -jar dist/Tesina_FIA.jar
+```
+
+Le librerie di terze parti vengono cercate dal compilatore su percorsi diversi a seconda del sistema operativo:
+- su windows in tesina-fia/third-party-jars
+- su linux in /usr/share/java

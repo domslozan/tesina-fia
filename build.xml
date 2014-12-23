@@ -7,7 +7,7 @@
   <condition property="jarpath" value="/usr/share/java/">
     <os family="unix" />
   </condition>
-  <condition property="jarpath" value="./">
+  <condition property="jarpath" value="./third-party-jars/">
     <os family="windows" />
   </condition>
 
