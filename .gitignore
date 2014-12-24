@@ -1,2 +1,5 @@
 dist/*
 build/*
+nbproject/private/*
+nbproject/build-impl.xml
+nbproject/genfiles.properties
