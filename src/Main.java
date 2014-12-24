@@ -2,7 +2,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Shape;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,6 +19,7 @@ class MapComponent extends JComponent {
 	setPreferredSize(new Dimension((int) wm.getBorder().getWidth(),(int) wm.getBorder().getHeight()));
     }
     
+    @Override
     protected void paintComponent(Graphics g) {
 	super.paintComponent(g);
 	Graphics2D g2d = (Graphics2D) g;
@@ -35,9 +35,10 @@ class MapComponent extends JComponent {
 
 
     private void test_draw_tiles(Graphics2D g) {
-	Iterator<Rectangle2D> i = new TileIterator(wm, 25);
+	TileWorldMap twm = new TileWorldMap(wm, 50);
+	Iterator<TileWorldMap.Tile> i = twm.tileIterator();
 	while (i.hasNext()) {
-	    g.draw(i.next());
+	    g.draw(i.next().getRectangle());
 	}
     }
 }
@@ -51,10 +52,10 @@ public class Main {
 
 	walls.add(new Rectangle2D.Double(350, 150, 100, 100));
 
-	WorldMap wm = new WorldMap(walls, new Rectangle2D.Double(0,0,600,400));
-	TilingGraphBuilder tgb = new TilingGraphBuilder(wm, 25);
+	WorldMap wm = new WorldMap(walls, 0,0,600,400);
+	TilingGraphBuilder tgb = new TilingGraphBuilder(wm, 50);
 	
-	DefaultDirectedWeightedGraph<Point2D, DefaultWeightedEdge> tileGraph = tgb.buildGraph();
+	DefaultDirectedWeightedGraph<TileWorldMap.Tile, DefaultWeightedEdge> tileGraph = tgb.buildGraph();
 
 	try {
 	    DOTExporter de = new DOTExporter();

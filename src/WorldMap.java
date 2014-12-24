@@ -6,13 +6,18 @@ import java.util.Iterator;
 import java.util.List;
 
 public class WorldMap {
-    private List<Shape> walls;
-    private Rectangle2D border;
+    protected List<Shape> walls;
+    private final double x, y, width, height;
 
-    public WorldMap(Collection<Shape> walls, Rectangle2D worldBorder) {
+    public WorldMap(Collection<Shape> walls, double x, double y, double width, double height) {
 	this.walls = new ArrayList();
 	this.walls.addAll(walls);
-	this.border = worldBorder;
+	this.x = x;
+	this.y = y;
+	if (width <= 0) throw new RuntimeException();
+	if (height <= 0) throw new RuntimeException();
+	this.width = width;
+	this.height = height;
     } 
 
     public Iterator<Shape> wallIterator() {
@@ -20,11 +25,22 @@ public class WorldMap {
     }
 
     public Rectangle2D getBorder() {
-	return border;
+	return new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
     }
 
-    // public List<Shape> borderAsWall(double wallWidth) {
-    // 	List<Shape> w = new ArrayList<Shape>();
-    // 	w.add(new Rectangle2D.Double(border));
-    // }
+    public double getX() {
+	return x;
+    }
+
+    public double getY() {
+	return y;
+    }
+
+    public double getWidth() {
+	return width;
+    }
+
+    public double getHeight() {
+	return height;
+    }
 }

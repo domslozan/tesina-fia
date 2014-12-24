@@ -1,46 +1,30 @@
-import java.awt.Shape;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.Point2D;
 import java.util.Iterator;
 import org.jgrapht.graph.*;
-import java.util.List;
 
 public class TilingGraphBuilder {
-    WorldMap worldMap;
-    double tileSize;
+    TileWorldMap worldMap;
 
     public TilingGraphBuilder(WorldMap wm, double tileSize) {
-	this.worldMap = wm;
-	this.tileSize = tileSize;
+	this.worldMap = new TileWorldMap(wm, tileSize);
     }
 
-    public DefaultDirectedWeightedGraph<Point2D, DefaultWeightedEdge> buildGraph() {
-	DefaultDirectedWeightedGraph<Point2D, DefaultWeightedEdge> graph = new DefaultDirectedWeightedGraph(DefaultWeightedEdge.class);
-	Iterator<Rectangle2D> i = new TileIterator(worldMap, tileSize);
+    public DefaultDirectedWeightedGraph<TileWorldMap.Tile, DefaultWeightedEdge> buildGraph() {
+	DefaultDirectedWeightedGraph<TileWorldMap.Tile, DefaultWeightedEdge> graph = new DefaultDirectedWeightedGraph(DefaultWeightedEdge.class);
+	Iterator<TileWorldMap.Tile> i = worldMap.tileIterator();
 	while (i.hasNext()) {
-	    Rectangle2D r = i.next();
-	    Point2D center = new Point2D.Double(r.getCenterX(), r.getCenterY());
-	    graph.addVertex(center);
+	    TileWorldMap.Tile t = i.next();
+	    graph.addVertex(t);
 	}
 	
-	// FIXME:  Gli errori di arrontondamento sui double possono far cambiare i centri
-	i = new TileIterator(worldMap, tileSize);
+	i = worldMap.tileIterator();
 	while (i.hasNext()) {
-	    Rectangle2D r = i.next();
-	    Point2D center = new Point2D.Double(r.getCenterX(), r.getCenterY());
-	    
-	    Point2D l = new Point2D.Double(r.getCenterX() - tileSize, r.getCenterY());
-	    if (graph.containsVertex(l))
-		graph.addEdge(center, l);
-	    Point2D u = new Point2D.Double(r.getCenterX(), r.getCenterY() - tileSize);
-	    if (graph.containsVertex(u))
-		graph.addEdge(center, u);
-	    Point2D right = new Point2D.Double(r.getCenterX() + tileSize, r.getCenterY());
-	    if (graph.containsVertex(right))
-		graph.addEdge(center, right);
-	    Point2D d = new Point2D.Double(r.getCenterX(), r.getCenterY() + tileSize);
-	    if (graph.containsVertex(d))
-		graph.addEdge(center, d);
+	    TileWorldMap.Tile t = i.next();
+	    Iterator <TileWorldMap.Tile> j = worldMap.adjacentTiles(t).iterator();
+	    while (j.hasNext()) {
+		TileWorldMap.Tile u = j.next();
+		if (!worldMap.intersectsWall(u))
+		    graph.addEdge(t, u);
+	    }
 	}
 	return graph;
     }
