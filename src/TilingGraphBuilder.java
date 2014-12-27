@@ -28,4 +28,8 @@ public class TilingGraphBuilder {
 	}
 	return graph;
     }
+
+    public TileWorldMap getTilingWorldMap() {
+        return worldMap;
+    }
 }

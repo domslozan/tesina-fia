@@ -45,6 +45,11 @@ public class TileWorldMap extends WorldMap {
 	public Point2D getCenter() {
 	    return new Point2D.Double(getRectangle().getCenterX(), getRectangle().getCenterY());
 	}
+
+        @Override
+        public String toString() {
+            return "Tile ("+index+")";
+        }
     }
 
     private final double tileSize;
@@ -109,7 +114,6 @@ public class TileWorldMap extends WorldMap {
 
 	public Point2D move(Point2D start, double magnitude) {
 	    double theta = Math.atan2(y, x);
-	    //double mod = magnitude / Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	    return new Point2D.Double(start.getX() + magnitude * Math.cos(theta), start.getY() + magnitude * Math.sin(theta));
 	}
     }
