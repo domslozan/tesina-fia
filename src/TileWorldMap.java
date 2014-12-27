@@ -86,6 +86,10 @@ public class TileWorldMap extends WorldMap {
 	double h = getHeight();
 	return (int) Math.floor(w / tileSize) * (int) Math.floor(h / tileSize);
     }
+
+    public double distance(Tile t1, Tile t2) {
+        return t1.getCenter().distance(t2.getCenter());
+    }
     
     public boolean intersectsWall(Tile t) {
 	Iterator<Shape> i = wallIterator();

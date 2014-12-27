@@ -22,8 +22,10 @@ public class TilingGraphBuilder {
 	    Iterator <TileWorldMap.Tile> j = worldMap.adjacentTiles(t).iterator();
 	    while (j.hasNext()) {
 		TileWorldMap.Tile u = j.next();
-		if (!worldMap.intersectsWall(u))
-		    graph.addEdge(t, u);
+		if (!worldMap.intersectsWall(u)) {
+		    DefaultWeightedEdge e = graph.addEdge(t, u);
+                      graph.setEdgeWeight(e, worldMap.distance(t, u));
+                  }
 	    }
 	}
 	return graph;
