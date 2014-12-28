@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 
 public abstract class BaseTileMap implements TileMap {
 
-    public class BaseTile implements Tile {
+    protected class BaseTile implements Tile {
 
         private final int index;
 
@@ -19,6 +19,10 @@ public abstract class BaseTileMap implements TileMap {
                 throw new IndexOutOfBoundsException("Tile number " + index + " does not exist");
             }
             this.index = index;
+        }
+
+        public int getIndex() {
+            return index;
         }
 
         @Override
