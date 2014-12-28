@@ -1,5 +1,5 @@
 # Tesina FIA
-## Requisiti:
+## Requisiti
 - jdk 1.6
 - [netbeans 7.0.1](https://netbeans.org/)
 - [jgrapht 0.8.3](https://github.com/jgrapht/jgrapht) (inclusa nel repository in `third-party-libs`)
