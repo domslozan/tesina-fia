@@ -1,3 +1,5 @@
+import algorithms.DijkstraPathfinder;
+import graph.TilingGraphBuilder;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -88,10 +90,10 @@ public class Main {
 
 	walls.add(new Rectangle2D.Double(350, 150, 100, 100));
 
-	WorldMap wm = new WorldMap(walls, 0,0,600,400);
-	TilingGraphBuilder tgb = new TilingGraphBuilder(wm, Main.TILE_SIZE);
-	
-	DefaultDirectedWeightedGraph<TileWorldMap.Tile, DefaultWeightedEdge> tileGraph = tgb.buildGraph();
+	WallListTileMap map = new WallListTileMap(TILE_SIZE, 60,40, 0, 0, walls);
+	TilingGraphBuilder tgb = new TilingGraphBuilder(map);
+
+	DefaultDirectedWeightedGraph<Tile, DefaultWeightedEdge> tileGraph = tgb.buildGraph();
 
 	try {
 	    DOTExporter de = new DOTExporter();
@@ -103,18 +105,18 @@ public class Main {
 	    throw new RuntimeException();
 	}
 
-         DijkstraPathfinder<TileWorldMap.Tile, DefaultWeightedEdge>.Path path = new DijkstraPathfinder<TileWorldMap.Tile, DefaultWeightedEdge>().findPath(tileGraph, tgb.getTilingWorldMap().new Tile(0), tgb.getTilingWorldMap().new Tile(59));
-         List<TileWorldMap.Tile> vertices = path.getVertices();
-         System.out.println(vertices.toString());
+         //DijkstraPathfinder<Tile, DefaultWeightedEdge>.Path path = new DijkstraPathfinder<Tile, DefaultWeightedEdge>().findPath(tileGraph, e(59));
+         //List<TileWorldMap.Tile> vertices = path.getVertices();
+         //System.out.println(vertices.toString());
 
-         ArrayList<Point2D> pointPath = new ArrayList<Point2D>();
-         for (TileWorldMap.Tile t : vertices) {
-             pointPath.add(t.getCenter());
-         }
+         //ArrayList<Point2D> pointPath = new ArrayList<Point2D>();
+         //for (TileWorldMap.Tile t : vertices) {
+          //   pointPath.add(t.getCenter());
+         //}
 
 
-         MapComponent mc = new MapComponent(wm);
-         mc.setPath(pointPath);
+         MapComponent mc = new MapComponent(map);
+         //mc.setPath(pointPath);
 
 	JFrame frame = new JFrame("Demo");
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
