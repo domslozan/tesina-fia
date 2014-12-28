@@ -15,7 +15,7 @@ public abstract class BaseTileMap implements TileMap {
         private final int index;
 
         private BaseTile(int index) {
-            if (index < 0 || index >= getMap().tileCount()) {
+            if (index < 0 || index >= BaseTileMap.this.tileCount()) {
                 throw new IndexOutOfBoundsException("Tile number " + index + " does not exist");
             }
             this.index = index;
@@ -86,14 +86,12 @@ public abstract class BaseTileMap implements TileMap {
 
     public abstract double getY();
 
-    public abstract int getTileWidth();
-
-    public abstract int getTileHeight();
-
+    @Override
     public double getWidth() {
         return getTileSize() * getTileWidth();
     }
 
+    @Override
     public double getHeight() {
         return getTileSize() * getTileHeight();
     }
