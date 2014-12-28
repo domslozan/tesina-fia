@@ -1,3 +1,4 @@
+
 import algorithms.DijkstraPathfinder;
 import graph.TilingGraphBuilder;
 import java.awt.BasicStroke;
@@ -25,16 +26,17 @@ import tiling.TileMap;
 import tiling.WallListTileMap;
 
 class MapComponent extends JComponent {
+
     private WallListTileMap map;
     private List<Point2D> path;
     //private BufferedImage image;
 
     public MapComponent(WallListTileMap map) {
-	this.map = map;
-         //image = new BufferedImage((int) wm.getBorder().getWidth(), (int) wm.getBorder().getHeight(), BufferedImage.TYPE_INT_ARGB);
-	setPreferredSize(new Dimension((int) map.getWidth(),(int) map.getHeight()));
+        this.map = map;
+        //image = new BufferedImage((int) wm.getBorder().getWidth(), (int) wm.getBorder().getHeight(), BufferedImage.TYPE_INT_ARGB);
+        setPreferredSize(new Dimension((int) map.getWidth(), (int) map.getHeight()));
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -58,13 +60,15 @@ class MapComponent extends JComponent {
         Iterator<Tile> i = map.iterator();
         g.setColor(Color.GRAY);
         //g.setStroke(new BasicStroke(0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1f, new float[]{5f, 5f}, 0f));
-	while (i.hasNext()) {
-	    g.draw(i.next().asRectangle());
-	}
+        while (i.hasNext()) {
+            g.draw(i.next().asRectangle());
+        }
     }
 
     private void drawPath(Graphics2D g) {
-        if (path == null) return;
+        if (path == null) {
+            return;
+        }
         g.setColor(Color.RED);
         Iterator<Point2D> i = path.iterator();
         Point2D last = i.next();
@@ -81,54 +85,52 @@ class MapComponent extends JComponent {
 }
 
 public class Main {
+
     public static final double TILE_SIZE = 10;
+
     public static void main(String[] argv) {
-	List<Shape> walls = new ArrayList<Shape>();
-	walls.add(new Rectangle2D.Double(295, 0, 10, 305));
-	walls.add(new Rectangle2D.Double(0, 295, 195, 10));
-	walls.add(new Rectangle2D.Double(245, 295, 50, 10));
+        List<Shape> walls = new ArrayList<Shape>();
+        walls.add(new Rectangle2D.Double(295, 0, 10, 305));
+        walls.add(new Rectangle2D.Double(0, 295, 195, 10));
+        walls.add(new Rectangle2D.Double(245, 295, 50, 10));
 
-	walls.add(new Rectangle2D.Double(350, 150, 100, 100));
+        walls.add(new Rectangle2D.Double(350, 150, 100, 100));
 
-	WallListTileMap map = new WallListTileMap(TILE_SIZE, 60,40, 0, 0, walls);
-	TilingGraphBuilder tgb = new TilingGraphBuilder(map);
+        WallListTileMap map = new WallListTileMap(TILE_SIZE, 60, 40, 0, 0, walls);
+        TilingGraphBuilder tgb = new TilingGraphBuilder(map);
 
-	DefaultDirectedWeightedGraph<Tile, DefaultWeightedEdge> tileGraph = tgb.buildGraph();
+        DefaultDirectedWeightedGraph<Tile, DefaultWeightedEdge> tileGraph = tgb.buildGraph();
 
-	try {
-	    DOTExporter de = new DOTExporter();
-	    FileWriter out = new FileWriter("tilegraph.dot");
-	    de.export(out, tileGraph);
-	    out.close();
-	}
-	catch (IOException e) {
-	    throw new RuntimeException();
-	}
+        try {
+            DOTExporter de = new DOTExporter();
+            FileWriter out = new FileWriter("tilegraph.dot");
+            de.export(out, tileGraph);
+            out.close();
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
 
-         //DijkstraPathfinder<Tile, DefaultWeightedEdge>.Path path = new DijkstraPathfinder<Tile, DefaultWeightedEdge>().findPath(tileGraph, e(59));
-         //List<TileWorldMap.Tile> vertices = path.getVertices();
-         //System.out.println(vertices.toString());
+        //DijkstraPathfinder<Tile, DefaultWeightedEdge>.Path path = new DijkstraPathfinder<Tile, DefaultWeightedEdge>().findPath(tileGraph, e(59));
+        //List<TileWorldMap.Tile> vertices = path.getVertices();
+        //System.out.println(vertices.toString());
 
-         //ArrayList<Point2D> pointPath = new ArrayList<Point2D>();
-         //for (TileWorldMap.Tile t : vertices) {
-          //   pointPath.add(t.getCenter());
-         //}
+        //ArrayList<Point2D> pointPath = new ArrayList<Point2D>();
+        //for (TileWorldMap.Tile t : vertices) {
+        //   pointPath.add(t.getCenter());
+        //}
 
 
-         MapComponent mc = new MapComponent(map);
-         //mc.setPath(pointPath);
+        MapComponent mc = new MapComponent(map);
+        //mc.setPath(pointPath);
 
-	JFrame frame = new JFrame("Demo");
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	frame.getContentPane().add(mc);
-	frame.pack();
-	frame.setVisible(true);
-	
-	//random_graph();
+        JFrame frame = new JFrame("Demo");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().add(mc);
+        frame.pack();
+        frame.setVisible(true);
+
+        //random_graph();
     }
-
-
-
 //    public static void random_graph() {
 //	RandomGraphGenerator<Integer, DefaultEdge> rgg = new RandomGraphGenerator<Integer, DefaultEdge>(100, 300);
 //	DefaultDirectedGraph<Integer, DefaultEdge> graph = new DefaultDirectedGraph<Integer, DefaultEdge>(DefaultEdge.class);
