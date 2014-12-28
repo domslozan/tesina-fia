@@ -68,7 +68,7 @@ public abstract class BaseTileMap implements TileMap {
             return "Tile(" + index + ")";
         }
     }
-    
+
     @Override
     public Rectangle2D asRectangle(Tile t) {
         BaseTile tile = (BaseTile) t;
@@ -111,8 +111,7 @@ public abstract class BaseTileMap implements TileMap {
         int type;
         while (!i.isDone()) {
             type = i.currentSegment(points);
-            switch (type)
-            {
+            switch (type) {
                 case PathIterator.SEG_MOVETO:
                     list.add(0, new Point2D.Double(points[0], points[1]));
                     break;
@@ -120,18 +119,20 @@ public abstract class BaseTileMap implements TileMap {
                     list.add(new Point2D.Double(points[0], points[1]));
                     break;
                 case PathIterator.SEG_CLOSE:
-                    list.add (list.get(0));
+                    list.add(list.get(0));
                     break;
             }
             i.next();
         }
-        if (list.size() != 4) throw new RuntimeException();
+        if (list.size() != 4) {
+            throw new RuntimeException();
+        }
         return list;
     }
 
     @Override
     public int tileCount() {
-        return getTileWidth()*getTileHeight();
+        return getTileWidth() * getTileHeight();
     }
 
     @Override
@@ -140,15 +141,15 @@ public abstract class BaseTileMap implements TileMap {
     }
 
     private enum Direction {
-        NW (-1, -1),
-        N (0,-1),
-        NE (1,-1),
-        E (1,0),
-        SE (1,1),
-        S (0,1),
-        SW (-1,1),
-        W (-1,0);
 
+        NW(-1, -1),
+        N(0, -1),
+        NE(1, -1),
+        E(1, 0),
+        SE(1, 1),
+        S(0, 1),
+        SW(-1, 1),
+        W(-1, 0);
         private final double x, y;
 
         private Direction(double x, double y) {
@@ -174,57 +175,68 @@ public abstract class BaseTileMap implements TileMap {
         Rectangle2D border = getBorder();
         Point2D p;
 
-        p = Direction.NW.move(tile.getCenter(), 5/4 * getTileSize());
-	if (border.contains(p))
-	    list.add(new BaseTile(tile.index - nw - 1));
+        p = Direction.NW.move(tile.getCenter(), 5 / 4 * getTileSize());
+        if (border.contains(p)) {
+            list.add(new BaseTile(tile.index - nw - 1));
+        }
 
-	p = Direction.N.move(tile.getCenter(), 5/4 * getTileSize());
-	if (border.contains(p))
-	    list.add(new BaseTile(tile.index - nw));
+        p = Direction.N.move(tile.getCenter(), 5 / 4 * getTileSize());
+        if (border.contains(p)) {
+            list.add(new BaseTile(tile.index - nw));
+        }
 
-	p = Direction.NE.move(tile.getCenter(), 5/4 * getTileSize());
-	if (border.contains(p))
-	    list.add(new BaseTile(tile.index - nw + 1));
+        p = Direction.NE.move(tile.getCenter(), 5 / 4 * getTileSize());
+        if (border.contains(p)) {
+            list.add(new BaseTile(tile.index - nw + 1));
+        }
 
-	p = Direction.E.move(tile.getCenter(), 5/4 * getTileSize());
-	if (border.contains(p))
-	    list.add(new BaseTile(tile.index + 1));
+        p = Direction.E.move(tile.getCenter(), 5 / 4 * getTileSize());
+        if (border.contains(p)) {
+            list.add(new BaseTile(tile.index + 1));
+        }
 
-	p = Direction.SE.move(tile.getCenter(), 5/4 * getTileSize());
-	if (border.contains(p))
-	    list.add(new BaseTile(tile.index + nw + 1));
+        p = Direction.SE.move(tile.getCenter(), 5 / 4 * getTileSize());
+        if (border.contains(p)) {
+            list.add(new BaseTile(tile.index + nw + 1));
+        }
 
-	p = Direction.S.move(tile.getCenter(), 5/4 * getTileSize());
-	if (border.contains(p))
-	    list.add(new BaseTile(tile.index + nw));
+        p = Direction.S.move(tile.getCenter(), 5 / 4 * getTileSize());
+        if (border.contains(p)) {
+            list.add(new BaseTile(tile.index + nw));
+        }
 
-	p = Direction.SW.move(tile.getCenter(), 5/4 * getTileSize());
-	if (border.contains(p))
-	    list.add(new BaseTile(tile.index + nw - 1));
+        p = Direction.SW.move(tile.getCenter(), 5 / 4 * getTileSize());
+        if (border.contains(p)) {
+            list.add(new BaseTile(tile.index + nw - 1));
+        }
 
-	p = Direction.W.move(tile.getCenter(), 5/4 * getTileSize());
-	if (border.contains(p))
-	    list.add(new BaseTile(tile.index - 1));
+        p = Direction.W.move(tile.getCenter(), 5 / 4 * getTileSize());
+        if (border.contains(p)) {
+            list.add(new BaseTile(tile.index - 1));
+        }
 
-	return list;
+        return list;
     }
 
     @Override
     public Iterator<Tile> iterator() {
         return new Iterator<Tile>() {
+
             private int nextTile = 0;
-            
+
             @Override
             public boolean hasNext() {
                 return nextTile < tileCount();
             }
-	    
+
             @Override
             public Tile next() {
-                if (! hasNext()) throw new NoSuchElementException();
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return new BaseTile(nextTile++);
-	    }
-	    
+            }
+
             @Override
             public void remove() {
                 throw new UnsupportedOperationException();
