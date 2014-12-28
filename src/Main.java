@@ -1,8 +1,10 @@
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -16,30 +18,34 @@ import org.jgrapht.ext.DOTExporter;
 import org.jgrapht.graph.*;
 import org.jgrapht.generate.*;
 import org.jgrapht.*;
+import tiling.Tile;
+import tiling.TileMap;
+import tiling.WallListTileMap;
 
 class MapComponent extends JComponent {
-    private WorldMap wm;
+    private WallListTileMap map;
     private List<Point2D> path;
     //private BufferedImage image;
 
-    public MapComponent(WorldMap wm) {
-	this.wm = wm;
+    public MapComponent(WallListTileMap map) {
+	this.map = map;
          //image = new BufferedImage((int) wm.getBorder().getWidth(), (int) wm.getBorder().getHeight(), BufferedImage.TYPE_INT_ARGB);
-	setPreferredSize(new Dimension((int) wm.getBorder().getWidth(),(int) wm.getBorder().getHeight()));
+	setPreferredSize(new Dimension((int) map.getWidth(),(int) map.getHeight()));
     }
     
     @Override
     protected void paintComponent(Graphics g) {
-	super.paintComponent(g);
+        super.paintComponent(g);
 
-	Graphics2D g2d = (Graphics2D) g;
-	drawWalls(g2d);
-	drawTiles(g2d);
-         drawPath(g2d);
+        Graphics2D g2d = (Graphics2D) g;
+        drawTiles(g2d);
+        drawWalls(g2d);
+        drawPath(g2d);
     }
 
     private void drawWalls(Graphics2D g) {
-        Iterator<Shape> i = wm.wallIterator();
+        Iterator<Shape> i = map.wallIterator();
+        g.setColor(Color.BLACK);
         while (i.hasNext()) {
             Shape s = i.next();
             g.fill(s);
@@ -47,14 +53,16 @@ class MapComponent extends JComponent {
     }
 
     private void drawTiles(Graphics2D g) {
-	TileWorldMap twm = new TileWorldMap(wm, Main.TILE_SIZE);
-	Iterator<TileWorldMap.Tile> i = twm.tileIterator();
+        Iterator<Tile> i = map.iterator();
+        g.setColor(Color.GRAY);
+        //g.setStroke(new BasicStroke(0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1f, new float[]{5f, 5f}, 0f));
 	while (i.hasNext()) {
-	    g.draw(i.next().getRectangle());
+	    g.draw(i.next().asRectangle());
 	}
     }
 
     private void drawPath(Graphics2D g) {
+        if (path == null) return;
         g.setColor(Color.RED);
         Iterator<Point2D> i = path.iterator();
         Point2D last = i.next();
