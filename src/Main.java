@@ -1,5 +1,7 @@
 
-import algorithms.DijkstraPathfinder;
+import algorithms.AStar;
+import algorithms.Dijkstra;
+import algorithms.EuclideanDistanceHeuristicFactory;
 import graph.TilingGraphBuilder;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -99,7 +101,7 @@ public class Main {
         WallListTileMap map = new WallListTileMap(TILE_SIZE, 60, 40, 0, 0, walls);
         TilingGraphBuilder tgb = new TilingGraphBuilder(map);
 
-        DefaultDirectedWeightedGraph<Tile, DefaultWeightedEdge> tileGraph = tgb.buildGraph();
+        Graph<Tile, DefaultWeightedEdge> tileGraph = tgb.buildGraph();
 
         try {
             DOTExporter de = new DOTExporter();
@@ -110,18 +112,20 @@ public class Main {
             throw new RuntimeException();
         }
 
-        //DijkstraPathfinder<Tile, DefaultWeightedEdge>.Path path = new DijkstraPathfinder<Tile, DefaultWeightedEdge>().findPath(tileGraph, e(59));
-        //List<TileWorldMap.Tile> vertices = path.getVertices();
-        //System.out.println(vertices.toString());
+        Tile start = map.getTileContaining(new Point2D.Double(5, 5));
+        Tile goal = map.getTileContaining(new Point2D.Double(595, 5));
 
-        //ArrayList<Point2D> pointPath = new ArrayList<Point2D>();
-        //for (TileWorldMap.Tile t : vertices) {
-        //   pointPath.add(t.getCenter());
-        //}
+        AStar<Tile, DefaultWeightedEdge> astar = new AStar<Tile, DefaultWeightedEdge>(new EuclideanDistanceHeuristicFactory());
+        Dijkstra<Tile, DefaultWeightedEdge> dijkstra = new Dijkstra<Tile, DefaultWeightedEdge>();
+        List<Tile> vertices = dijkstra.getPath(tileGraph, start, goal);
 
+        ArrayList<Point2D> pointPath = new ArrayList<Point2D>();
+        for (Tile t : vertices) {
+            pointPath.add(t.getCenter());
+        }
 
         MapComponent mc = new MapComponent(map);
-        //mc.setPath(pointPath);
+        mc.setPath(pointPath);
 
         JFrame frame = new JFrame("Demo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
