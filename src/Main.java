@@ -99,6 +99,9 @@ public class Main {
 
         walls.add(new Ellipse2D.Double(350, 150, 100, 150));
 
+	walls.add(new Rectangle2D.Double(350, 90, 160, 10));
+	walls.add(new Rectangle2D.Double(500, 120, 10, 260));
+
         WallListTileMap map = new WallListTileMap(TILE_SIZE, 60, 40, 0, 0, walls);
         TilingGraphBuilder tgb = new TilingGraphBuilder(map);
 
