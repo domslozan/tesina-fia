@@ -87,6 +87,13 @@ public abstract class BaseTileMap implements TileMap {
     public abstract double getY();
 
     @Override
+    public Tile getTileContaining(Point2D point) {
+        int i = (int) Math.floor(point.getX() / getTileSize());
+        int j = (int) Math.floor(point.getY() / getTileSize());
+        return new BaseTile(getTileWidth() * j + i);
+    }
+
+    @Override
     public double getWidth() {
         return getTileSize() * getTileWidth();
     }

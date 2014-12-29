@@ -12,6 +12,8 @@ public interface TileMap extends Iterable<Tile> {
 
     Point2D getCenter(Tile t);
 
+    Tile getTileContaining(Point2D point);
+
     List<Point2D> getCorners(Tile t);
 
     int tileCount();
