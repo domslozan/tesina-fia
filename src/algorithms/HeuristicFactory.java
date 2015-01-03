@@ -2,5 +2,5 @@ package algorithms;
 
 public interface HeuristicFactory<V> {
 
-    Heuristic<V> makeHeuristic(V goal);
+    Heuristic<V> newHeuristic(V goal);
 }
