@@ -1,15 +1,18 @@
-package algorithms;
+package graph;
 
 import java.util.Iterator;
 import java.util.List;
-import org.jgrapht.Graph;
+import org.jgrapht.WeightedGraph;
 
 public class Path<V, E> implements Iterable<V> {
 
     private final List<V> vertices;
-    private final Graph<V, E> graph;
+    private final WeightedGraph<V, E> graph;
 
-    public Path(Graph<V, E> graph, List<V> vertices) {
+    public Path(WeightedGraph<V, E> graph, List<V> vertices) {
+        if (vertices.isEmpty()) {
+            throw new IllegalArgumentException("Empty path");
+        }
         this.graph = graph;
         this.vertices = vertices;
     }
@@ -18,14 +21,15 @@ public class Path<V, E> implements Iterable<V> {
         return vertices;
     }
 
+    public WeightedGraph<V, E> getGraph() {
+        return graph;
+    }
+
     public int length() {
         return vertices.size();
     }
 
     public double cost() {
-        if (length() == 0) {
-            throw new RuntimeException();
-        }
         Iterator<V> i = vertices.iterator();
         V last = i.next();
         double cost = 0;
