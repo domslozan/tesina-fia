@@ -13,8 +13,8 @@ public class TilingGraphBuilder {
         this.worldMap = wm;
     }
 
-    public DefaultDirectedWeightedGraph<Tile, DefaultWeightedEdge> buildGraph() {
-        DefaultDirectedWeightedGraph<Tile, DefaultWeightedEdge> graph = new DefaultDirectedWeightedGraph(DefaultWeightedEdge.class);
+    public ListenableDirectedWeightedGraph<Tile, DefaultWeightedEdge> buildGraph() {
+        ListenableDirectedWeightedGraph<Tile, DefaultWeightedEdge> graph = new ListenableDirectedWeightedGraph(DefaultWeightedEdge.class);
         Iterator<Tile> i = worldMap.iterator();
         while (i.hasNext()) {
             Tile t = i.next();
