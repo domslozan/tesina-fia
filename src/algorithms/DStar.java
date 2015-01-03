@@ -1,5 +1,6 @@
 package algorithms;
 
+import graph.Path;
 import graph.Utils;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -8,7 +9,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
-import org.jgrapht.WeightedGraph;
+import org.jgrapht.event.GraphEdgeChangeEvent;
+import org.jgrapht.event.GraphVertexChangeEvent;
+import org.jgrapht.graph.ListenableDirectedWeightedGraph;
 
 public class DStar<V, E> implements Pathfinder<V, E> {
 
@@ -16,15 +19,16 @@ public class DStar<V, E> implements Pathfinder<V, E> {
 
         NEW, OPEN, CLOSED
     }
-    private final WeightedGraph<V, E> graph;
-    private V goal, start;
-    private boolean isFirstRun;
+    private final ListenableDirectedWeightedGraph<V, E> graph;
     private final PriorityQueue<V> open;
     private final Map<V, Double> hs, ks;
     private final Map<V, V> parents;
     private final Set<V> closed;
+    private V goal, start;
+    private boolean isFirstRun;
+    private PathfinderEventListener<V, E> listener;
 
-    public DStar(WeightedGraph<V, E> graph) {
+    public DStar(ListenableDirectedWeightedGraph<V, E> graph) {
         this.graph = graph;
 
         this.hs = new HashMap<V, Double>();
@@ -32,18 +36,38 @@ public class DStar<V, E> implements Pathfinder<V, E> {
         this.parents = new HashMap<V, V>();
         this.closed = new HashSet<V>();
         this.open = new PriorityQueue<V>(11, queueComparator());
+
+        this.listener = new NullListener<V, E>();
     }
 
-    private Comparator<V> queueComparator() {
-        return new Comparator<V>() {
+    @Override
+    public void edgeAdded(GraphEdgeChangeEvent<V, E> gece) {
+        if (gece.getType() == GraphEdgeChangeEvent.EDGE_ADDED) {
+            updatedEdgeWeight(gece.getEdge());
+        }
+    }
 
-            @Override
-            public int compare(V v, V u) {
-                double vk = ks.get(v);
-                double uk = ks.get(u);
-                return Double.compare(vk, uk);
-            }
-        };
+    @Override
+    public void edgeRemoved(GraphEdgeChangeEvent<V, E> gece) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void vertexAdded(GraphVertexChangeEvent<V> gvce) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void vertexRemoved(GraphVertexChangeEvent<V> gvce) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public void addListener(PathfinderEventListener<V, E> listener) {
+        if (listener == null) {
+            throw new IllegalArgumentException();
+        }
+        this.listener = listener;
     }
 
     @Override
@@ -84,8 +108,19 @@ public class DStar<V, E> implements Pathfinder<V, E> {
         return new Path(graph, list);
     }
 
-    @Override
-    public void updatedEdgeWeight(E edge) {
+    private Comparator<V> queueComparator() {
+        return new Comparator<V>() {
+
+            @Override
+            public int compare(V v, V u) {
+                double vk = ks.get(v);
+                double uk = ks.get(u);
+                return Double.compare(vk, uk);
+            }
+        };
+    }
+
+    private void updatedEdgeWeight(E edge) {
         V x = graph.getEdgeTarget(edge);
         if (nodeType(x) == NodeType.CLOSED) {
             insert(x, h(x));
@@ -96,13 +131,19 @@ public class DStar<V, E> implements Pathfinder<V, E> {
         if (nodeType(x) == NodeType.OPEN) {
             open.remove(x);
             ks.put(x, Math.min(h_new, ks.get(x)));
+            set_h(x, h_new);
+            open.offer(x);
         } else if (nodeType(x) == NodeType.CLOSED) {
             ks.put(x, Math.min(h_new, h(x)));
+            set_h(x, h_new);
+            open.offer(x);
+            listener.openVertex(this, x);
         } else {
             ks.put(x, h_new);
+            set_h(x, h_new);
+            open.offer(x);
+            listener.openVertex(this, x);
         }
-        set_h(x, h_new);
-        open.offer(x);
     }
 
     private void reset() {
@@ -186,6 +227,7 @@ public class DStar<V, E> implements Pathfinder<V, E> {
             throw new RuntimeException("D* should only remove from the top");
         }
         closed.add(x);
+        listener.closeVertex(this, x);
     }
 
     private V minState() {

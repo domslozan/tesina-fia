@@ -1,5 +1,6 @@
 package algorithms;
 
+import graph.Path;
 import graph.Utils;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,6 +10,8 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import org.jgrapht.WeightedGraph;
+import org.jgrapht.event.GraphEdgeChangeEvent;
+import org.jgrapht.event.GraphVertexChangeEvent;
 
 public class AStar<V, E> implements Pathfinder<V, E> {
 
@@ -24,6 +27,7 @@ public class AStar<V, E> implements Pathfinder<V, E> {
     private final Set<V> closed;
     private final PriorityQueue<V> open;
     private final HeuristicFactory<V> hf;
+    private PathfinderEventListener<V, E> listener;
 
     public AStar(WeightedGraph<V, E> graph, HeuristicFactory<V> hf) {
         this.graph = graph;
@@ -33,6 +37,50 @@ public class AStar<V, E> implements Pathfinder<V, E> {
         this.gs = new HashMap<V, Double>();
         this.parents = new HashMap<V, V>();
         this.closed = new HashSet<V>();
+
+        this.listener = new NullListener<V, E>();
+    }
+
+    @Override
+    public void addListener(PathfinderEventListener<V, E> listener) {
+        if (listener == null) {
+            throw new IllegalArgumentException();
+        }
+        this.listener = listener;
+    }
+
+    @Override
+    public void edgeAdded(GraphEdgeChangeEvent<V, E> gece) {
+    }
+
+    @Override
+    public void edgeRemoved(GraphEdgeChangeEvent<V, E> gece) {
+    }
+
+    @Override
+    public void vertexAdded(GraphVertexChangeEvent<V> gvce) {
+    }
+
+    @Override
+    public void vertexRemoved(GraphVertexChangeEvent<V> gvce) {
+    }
+
+    @Override
+    public Path<V, E> findPath(V start, V goal) {
+        reset();
+        h = hf.newHeuristic(goal);
+        this.start = start;
+        this.goal = goal;
+        boolean found = buildPath();
+        LinkedList<V> list = new LinkedList<V>();
+        if (found) {
+            V next = goal;
+            while (next != null) {
+                list.addFirst(next);
+                next = getParent(next);
+            }
+        }
+        return new Path(graph, list);
     }
 
     private Comparator<V> queueComparator() {
@@ -71,22 +119,6 @@ public class AStar<V, E> implements Pathfinder<V, E> {
         gs.put(s, g);
     }
 
-    @Override
-    public Path<V, E> findPath(V start, V goal) {
-        reset();
-        h = hf.newHeuristic(goal);
-        boolean found = buildPath();
-        LinkedList<V> list = new LinkedList<V>();
-        if (found) {
-            V next = goal;
-            while (next != null) {
-                list.addFirst(next);
-                next = getParent(next);
-            }
-        }
-        return new Path(graph, list);
-    }
-
     private void reset() {
         open.clear();
         closed.clear();
@@ -99,6 +131,7 @@ public class AStar<V, E> implements Pathfinder<V, E> {
         setG(start, 0);
         setParent(start, null);
         open.offer(start);
+        listener.openVertex(this, goal);
 
         while (!open.isEmpty()) {
             V s = open.poll();
@@ -106,12 +139,14 @@ public class AStar<V, E> implements Pathfinder<V, E> {
                 return true;
             }
             closed.add(s);
+            listener.closeVertex(this, s);
             for (V t : Utils.neighborsOf(graph, s)) {
                 if (!(nodeType(t) == NodeType.CLOSED)) {
                     if (!(nodeType(t) == NodeType.OPEN)) {
                         setG(t, Double.MAX_VALUE);
                         setParent(t, null);
                         open.offer(t);
+                        listener.openVertex(this, t);
                     }
                     updateVertex(s, t);
                 }
@@ -128,12 +163,11 @@ public class AStar<V, E> implements Pathfinder<V, E> {
             setParent(t, s);
             if (nodeType(t) == NodeType.OPEN) {
                 open.remove(t);
+                open.offer(t);
+            } else {
+                open.offer(t);
+                listener.openVertex(this, t);
             }
-            open.offer(t);
         }
-    }
-
-    @Override
-    public void updatedEdgeWeight(E edge) {
     }
 }
