@@ -1,11 +1,15 @@
 package algorithms;
 
 import graph.Path;
-import org.jgrapht.event.GraphListener;
+import org.jgrapht.WeightedGraph;
 
-public interface Pathfinder<V, E> extends GraphListener<V, E> {
+public interface Pathfinder<V, E> {
 
     Path<V, E> findPath(V start, V goal);
+
+    WeightedGraph<V, E> getGraph();
+
+    void updateGraphEdge(E e, double weight);
 
     void addListener(PathfinderEventListener<V, E> listener);
 }

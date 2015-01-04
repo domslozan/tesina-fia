@@ -2,16 +2,19 @@ package algorithms;
 
 import graph.Path;
 import graph.Utils;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.event.GraphEdgeChangeEvent;
 import org.jgrapht.event.GraphVertexChangeEvent;
+import org.jgrapht.graph.AbstractBaseGraph;
 
 public class AStar<V, E> implements Pathfinder<V, E> {
 
@@ -27,10 +30,10 @@ public class AStar<V, E> implements Pathfinder<V, E> {
     private final Set<V> closed;
     private final PriorityQueue<V> open;
     private final HeuristicFactory<V> hf;
-    private PathfinderEventListener<V, E> listener;
+    private List<PathfinderEventListener<V, E>> listeners;
 
     public AStar(WeightedGraph<V, E> graph, HeuristicFactory<V> hf) {
-        this.graph = graph;
+        this.graph = (WeightedGraph) ((AbstractBaseGraph) graph).clone();
         this.hf = hf;
 
         this.open = new PriorityQueue<V>(11, queueComparator());
@@ -38,7 +41,7 @@ public class AStar<V, E> implements Pathfinder<V, E> {
         this.parents = new HashMap<V, V>();
         this.closed = new HashSet<V>();
 
-        this.listener = new NullListener<V, E>();
+        this.listeners = new ArrayList<PathfinderEventListener<V, E>>();
     }
 
     @Override
@@ -46,23 +49,12 @@ public class AStar<V, E> implements Pathfinder<V, E> {
         if (listener == null) {
             throw new IllegalArgumentException();
         }
-        this.listener = listener;
+        listeners.add(listener);
     }
 
     @Override
-    public void edgeAdded(GraphEdgeChangeEvent<V, E> gece) {
-    }
-
-    @Override
-    public void edgeRemoved(GraphEdgeChangeEvent<V, E> gece) {
-    }
-
-    @Override
-    public void vertexAdded(GraphVertexChangeEvent<V> gvce) {
-    }
-
-    @Override
-    public void vertexRemoved(GraphVertexChangeEvent<V> gvce) {
+    public WeightedGraph<V, E> getGraph() {
+        return graph;
     }
 
     @Override
@@ -81,6 +73,11 @@ public class AStar<V, E> implements Pathfinder<V, E> {
             }
         }
         return new Path(graph, list);
+    }
+
+    @Override
+    public void updateGraphEdge(E edge, double weight) {
+        graph.setEdgeWeight(edge, weight);
     }
 
     private Comparator<V> queueComparator() {
@@ -127,11 +124,23 @@ public class AStar<V, E> implements Pathfinder<V, E> {
         parents.clear();
     }
 
+    private void callOpenVertex(V x) {
+        for (PathfinderEventListener<V, E> pel : listeners) {
+            pel.openVertex(this, x);
+        }
+    }
+
+    private void callCloseVertex(V x) {
+        for (PathfinderEventListener<V, E> pel : listeners) {
+            pel.closeVertex(this, x);
+        }
+    }
+
     private boolean buildPath() {
         setG(start, 0);
         setParent(start, null);
         open.offer(start);
-        listener.openVertex(this, goal);
+        callOpenVertex(goal);
 
         while (!open.isEmpty()) {
             V s = open.poll();
@@ -139,14 +148,14 @@ public class AStar<V, E> implements Pathfinder<V, E> {
                 return true;
             }
             closed.add(s);
-            listener.closeVertex(this, s);
+            callCloseVertex(s);
             for (V t : Utils.neighborsOf(graph, s)) {
                 if (!(nodeType(t) == NodeType.CLOSED)) {
                     if (!(nodeType(t) == NodeType.OPEN)) {
                         setG(t, Double.MAX_VALUE);
                         setParent(t, null);
                         open.offer(t);
-                        listener.openVertex(this, t);
+                        callOpenVertex(t);
                     }
                     updateVertex(s, t);
                 }
@@ -166,7 +175,7 @@ public class AStar<V, E> implements Pathfinder<V, E> {
                 open.offer(t);
             } else {
                 open.offer(t);
-                listener.openVertex(this, t);
+                callOpenVertex(t);
             }
         }
     }
