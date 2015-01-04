@@ -29,12 +29,13 @@ public class Utils {
         HashMap<E, Double> we = new HashMap<E, Double>();
         for (E e : graph.edgesOf(vertex)) {
             if (graph.getEdgeSource(e).equals(vertex)) {
-                boolean blocked = vertex.getMap().isReallyBlocked(vertex);
-                double weight = graph.getEdgeWeight(e);
                 Tile target = graph.getEdgeTarget(e);
+                boolean blocked = vertex.getMap().isReallyBlocked(target);
+                double weight = graph.getEdgeWeight(e);
                 double real_weight = vertex.getMap().centerDistance(vertex, target);
-                if ((blocked && weight < Double.MAX_VALUE)
-                        || (!blocked && weight != real_weight)) {
+                if (blocked && weight < Double.MAX_VALUE) {
+                    we.put(e, Double.MAX_VALUE);
+                } else if ((!blocked && weight != real_weight)) {
                     we.put(e, real_weight);
                 }
             }
