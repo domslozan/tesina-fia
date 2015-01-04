@@ -22,6 +22,8 @@ public interface TileMap extends Iterable<Tile> {
 
     boolean isBlocked(Tile t);
 
+    boolean isReallyBlocked(Tile t);
+
     List<Tile> adjacentTiles(Tile t);
 
     double getWidth();

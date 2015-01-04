@@ -29,15 +29,19 @@ public class Main {
         walls.add(new Rectangle2D.Double(0, 295, 195, 10));
         walls.add(new Rectangle2D.Double(245, 295, 50, 10));
 
-        walls.add(new Ellipse2D.Double(350, 150, 100, 150));
-
         walls.add(new Rectangle2D.Double(350, 90, 160, 10));
         walls.add(new Rectangle2D.Double(500, 120, 10, 260));
         return walls;
     }
 
+    private static List<Shape> hiddenWalls() {
+        List<Shape> walls = new ArrayList<Shape>();
+        walls.add(new Ellipse2D.Double(350, 150, 100, 150));
+        return walls;
+    }
+
     public static void main(String[] argv) {
-        map = new WallListTileMap(TILE_SIZE, 60, 40, 0, 0, walls());
+        map = new WallListTileMap(TILE_SIZE, 60, 40, 0, 0, walls(), hiddenWalls());
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override

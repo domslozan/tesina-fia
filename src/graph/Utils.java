@@ -28,7 +28,7 @@ public class Utils {
         HashMap<E, Double> we = new HashMap<E, Double>();
         for (E e : graph.edgesOf(vertex)) {
             if (graph.getEdgeSource(e).equals(vertex)) {
-                boolean blocked = vertex.getMap().isBlocked(vertex);
+                boolean blocked = vertex.getMap().isReallyBlocked(vertex);
                 double weight = graph.getEdgeWeight(e);
                 Tile target = graph.getEdgeTarget(e);
                 double real_weight = vertex.getMap().centerDistance(vertex, target);
