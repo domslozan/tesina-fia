@@ -49,4 +49,16 @@ public class Path<V, E> implements Iterable<V> {
     public Iterator<V> iterator() {
         return vertices.iterator();
     }
+
+    public Path<V, E> mergeWith(Path<V, E> p2) {
+        Path<V, E> p1 = this;
+        V mergePoint = p2.getVertices().get(0);
+        int i = p1.getVertices().indexOf(mergePoint);
+        if (i == -1) {
+            throw new IllegalArgumentException("This paths are not mergeable");
+        }
+        List<V> newVertices = p1.getVertices().subList(0, i);
+        newVertices.addAll(i, p2.getVertices());
+        return new Path<V, E>(p1.getGraph(), newVertices);
+    }
 }

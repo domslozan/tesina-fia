@@ -42,15 +42,4 @@ public class Utils {
         }
         return we;
     }
-
-    public static <V, E> Path<V, E> mergePaths(Path<V, E> p1, Path<V, E> p2) {
-        V mergePoint = p2.getVertices().get(0);
-        int i = p1.getVertices().indexOf(mergePoint);
-        if (i == -1) {
-            throw new IllegalArgumentException("This paths are not mergeable");
-        }
-        List<V> newVertices = p1.getVertices().subList(0, i);
-        newVertices.addAll(i, p2.getVertices());
-        return new Path<V, E>(p1.getGraph(), newVertices);
-    }
 }
