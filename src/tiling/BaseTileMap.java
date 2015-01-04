@@ -224,6 +224,11 @@ public abstract class BaseTileMap implements TileMap {
     }
 
     @Override
+    public boolean isReallyBlocked(Tile t) {
+        return isBlocked(t);
+    }
+
+    @Override
     public Iterator<Tile> iterator() {
         return new Iterator<Tile>() {
 
