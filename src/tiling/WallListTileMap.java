@@ -41,7 +41,7 @@ public class WallListTileMap extends BaseTileMap {
         }
         this.hiddenWalls = new LinkedList<Shape>();
         if (hidden_walls != null) {
-            this.walls.addAll(hidden_walls);
+            this.hiddenWalls.addAll(hidden_walls);
         }
     }
 
