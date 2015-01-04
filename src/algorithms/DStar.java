@@ -76,24 +76,21 @@ public class DStar<V, E> implements Pathfinder<V, E> {
             this.goal = goal;
             reset();
         }
+        this.start = start;
         boolean found = false;
         if (isFirstRun) {
-            this.start = start;
             insert(goal, 0);
-            double kmin = 0;
-            while (nodeType(start) != NodeType.CLOSED && kmin != -1) {
+            double kmin = getKMin();
+            while (nodeType(start) != NodeType.CLOSED && kmin >= 0) {
                 kmin = processState();
             }
             found = nodeType(start) == NodeType.CLOSED;
         } else {
-            if (this.start == start) {
-                throw new RuntimeException("Could not terminate correctly if called with the same start twice?");
-            }
-            this.start = start;
             double kmin = getKMin();
-            while (kmin < h(start)) {
+            while (kmin < h(start) && kmin >= 0) {
                 kmin = processState();
             }
+            if (kmin < 0) throw new RuntimeException("Does not terminate correctly!");
             found = true;
         }
 
