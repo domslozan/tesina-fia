@@ -33,6 +33,7 @@ public class MapPanel extends JPanel {
     private final Map<PathfinderWrapper, BufferedImage> fillImages;
     private final FillListener listener;
     private Tile start, goal;
+    private MapLegend legend;
 
     public MapPanel(WallListTileMap map) {
         this.map = map;
@@ -44,6 +45,10 @@ public class MapPanel extends JPanel {
         this.setPreferredSize(new Dimension((int) map.getWidth(), (int) map.getHeight()));
         this.addMouseListener(newMouseListener());
 
+    }
+
+    public void setLegend(MapLegend l) {
+        this.legend = l;
     }
 
     private MouseListener newMouseListener() {
@@ -68,17 +73,59 @@ public class MapPanel extends JPanel {
         };
     }
 
-    private void updatePaths() {
+    private MouseListener newLegendElementListener(final PathfinderWrapper pf) {
+        return new MouseInputAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent me) {
+                setDrawDetail(pf);
+                repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent me) {
+                unsetDrawDetail(pf);
+                repaint();
+            }
+        };
+    }
+    private boolean drawDetail = false;
+    private Path<Tile, DefaultWeightedEdge> pathDetail;
+    private BufferedImage fillDetail;
+
+    private void setDrawDetail(PathfinderWrapper pf) {
+        drawDetail = true;
+        pathDetail = paths.get(pf);
+        fillDetail = fillImages.get(pf);
+    }
+
+    private void unsetDrawDetail(PathfinderWrapper pf) {
+        drawDetail = false;
+    }
+
+    private void setupPathfinders() {
         paths.clear();
         fillImages.clear();
         listener.clear();
+        legend.clearElements();
         pathfinders = PathfinderFactory.allPathfinders(map);
         for (PathfinderWrapper pf : pathfinders) {
             pf.addListener(listener);
+
+            legend.addElement(pf, newLegendElementListener(pf));
+
+
         }
+
+
+    }
+
+    private void updatePaths() {
+
         if (start == null || goal == null) {
             return;
         }
+        setupPathfinders();
         for (PathfinderWrapper pf : pathfinders) {
             BufferedImage fill = new BufferedImage((int) map.getWidth(), (int) map.getHeight(), BufferedImage.TYPE_INT_ARGB);
             fillImages.put(pf, fill);
@@ -91,6 +138,7 @@ public class MapPanel extends JPanel {
                 current = followPath(restOfPath, pf);
             }
             paths.put(pf, path);
+            System.err.println(pf.getName() + ": path cost = " + path.cost() + ", opened nodes = " + listener.openedCount(pf));
         }
     }
 
@@ -118,9 +166,30 @@ public class MapPanel extends JPanel {
         drawWalls((Graphics2D) g.create());
         drawHiddenWalls((Graphics2D) g.create());
 
-        //drawFill((Graphics2D) g.create(), );
+        if (drawDetail) {
+            ((Graphics2D) g.create()).drawImage(fillDetail, null, null);
+        }
+
 
         drawPaths((Graphics2D) g.create());
+        if (drawDetail) {
+
+
+            Graphics2D gc = (Graphics2D) g.create();
+            gc.setColor(Color.RED);
+            gc.setStroke(new BasicStroke(3f));
+            if (pathDetail.length() > 0) {
+                Iterator<Tile> i = pathDetail.iterator();
+                Point2D last = i.next().getCenter();
+                while (i.hasNext()) {
+                    Point2D n = i.next().getCenter();
+                    gc.drawLine((int) last.getX(), (int) last.getY(), (int) n.getX(), (int) n.getY());
+                    last = n;
+                }
+            }
+        }
+
+
         drawEndpoints((Graphics2D) g.create());
 
 
@@ -135,7 +204,7 @@ public class MapPanel extends JPanel {
     }
 
     private void drawEndpoints(Graphics2D g) {
-        g.setStroke(new BasicStroke(2f));
+        g.setStroke(new BasicStroke(3f));
         g.setColor(Color.RED);
         if (start != null) {
             Rectangle2D r = start.asRectangle();

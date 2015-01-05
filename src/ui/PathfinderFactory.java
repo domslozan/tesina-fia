@@ -21,7 +21,9 @@ public class PathfinderFactory {
 
     public static enum Algorithm {
 
-        DIJKSTRA, ASTAR_ED, DSTAR, ASTAR_OD
+        DIJKSTRA, ASTAR_ED, 
+        DSTAR,
+        ASTAR_OD
     }
 
     public static PathfinderWrapper newPathfinder(Algorithm algo, DefaultDirectedWeightedGraph<Tile, DefaultWeightedEdge> graph) {
