@@ -1,7 +1,9 @@
 package generate;
 
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -9,6 +11,10 @@ import java.util.Random;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
+import org.jgrapht.generate.RandomGraphGenerator;
+import org.jgrapht.graph.ClassBasedVertexFactory;
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
+import org.jgrapht.graph.DefaultWeightedEdge;
 import tiling.BaseTileMap;
 import tiling.Tile;
 import tiling.TileMap;
@@ -121,8 +127,19 @@ public class RandomTileMapGenerator {
         }
         try {
             gen.writeMapSet(maps, "maps_100x100_25.json");
+
+            DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge> graph = new DefaultDirectedWeightedGraph<Object, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+            RandomGraphGenerator<Object,DefaultWeightedEdge> rand = new RandomGraphGenerator<Object, DefaultWeightedEdge>(10, 10);
+            rand.generateGraph(graph, new ClassBasedVertexFactory<Object>(Object.class), null);
+
+            FileOutputStream fio = new FileOutputStream("testgraph.txt");
+            ObjectOutputStream oout = new ObjectOutputStream(fio);
+            oout.writeObject(graph);
+            oout.close();
+            fio.close();
+
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 }

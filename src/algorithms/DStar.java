@@ -1,7 +1,6 @@
 package algorithms;
 
 import graph.Path;
-import graph.Utils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -11,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
-import org.jgrapht.WeightedGraph;
-import org.jgrapht.graph.AbstractBaseGraph;
+import org.jgrapht.Graphs;
+
+
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 
 public class DStar<V, E> implements Pathfinder<V, E> {
 
@@ -20,7 +21,7 @@ public class DStar<V, E> implements Pathfinder<V, E> {
 
         NEW, OPEN, CLOSED
     }
-    private final WeightedGraph<V, E> graph;
+    private final DefaultDirectedWeightedGraph<V, E> graph;
     private final PriorityQueue<V> open;
     private final Map<V, Double> hs, ks;
     private final Map<V, V> parents;
@@ -29,8 +30,8 @@ public class DStar<V, E> implements Pathfinder<V, E> {
     private boolean isFirstRun;
     private List<PathfinderEventListener<V, E>> listeners;
 
-    public DStar(WeightedGraph<V, E> graph) {
-        this.graph = (WeightedGraph) ((AbstractBaseGraph) graph).clone();
+    public DStar(DefaultDirectedWeightedGraph<V, E> graph) {
+        this.graph = graph;
 
         this.hs = new HashMap<V, Double>();
         this.ks = new HashMap<V, Double>();
@@ -50,7 +51,7 @@ public class DStar<V, E> implements Pathfinder<V, E> {
     }
 
     @Override
-    public WeightedGraph<V, E> getGraph() {
+    public DefaultDirectedWeightedGraph<V, E> getGraph() {
         return graph;
     }
 
@@ -69,14 +70,15 @@ public class DStar<V, E> implements Pathfinder<V, E> {
                 kmin = processState();
             }
             found = nodeType(start) == NodeType.CLOSED;
+            isFirstRun = false;
         } else {
             double kmin = getKMin();
             while (kmin < h(start) && kmin >= 0) {
                 kmin = processState();
             }
-            if (kmin < 0) {
-                throw new RuntimeException("Does not terminate correctly!");
-            }
+            /*if (kmin < 0) {
+            throw new RuntimeException("Does not terminate correctly!");
+            }*/
             found = true;
         }
 
@@ -165,7 +167,7 @@ public class DStar<V, E> implements Pathfinder<V, E> {
         double k_old = getKMin();
         delete(x);
         if (k_old < h(x)) {
-            for (V y : Utils.neighborsOf(graph, x)) {
+            for (V y : Graphs.neighborListOf(graph, x)) {
                 if (h(y) <= k_old && h(x) > h(y) + edgeCost(y, x)) {
                     set_parent(x, y);
                     set_h(x, h(y) + edgeCost(y, x));
@@ -173,24 +175,24 @@ public class DStar<V, E> implements Pathfinder<V, E> {
             }
         }
         if (k_old == h(x)) {
-            for (V y : Utils.neighborsOf(graph, x)) {
+            for (V y : Graphs.neighborListOf(graph, x)) {
                 if ((nodeType(y) == NodeType.NEW)
-                        || (parent(y) == x && h(y) != h(x) + edgeCost(x, y))
-                        || (parent(y) != x && h(y) > h(x) + edgeCost(x, y))) {
+                        || (isB(y, x) && h(y) != h(x) + edgeCost(x, y))
+                        || (!isB(y, x) && h(y) > h(x) + edgeCost(x, y))) {
                     set_parent(y, x);
                     insert(y, h(x) + edgeCost(x, y));
                 }
             }
         } else {
-            for (V y : Utils.neighborsOf(graph, x)) {
+            for (V y : Graphs.neighborListOf(graph, x)) {
                 if ((nodeType(y) == NodeType.NEW)
-                        || (parent(y) == x && h(y) != h(x) + edgeCost(x, y))) {
+                        || (isB(y, x) && h(y) != h(x) + edgeCost(x, y))) {
                     set_parent(y, x);
                     insert(y, h(x) + edgeCost(x, y));
                 } else {
-                    if (parent(y) != x && h(y) > h(x) + edgeCost(x, y)) {
+                    if (!isB(y, x) && h(y) > h(x) + edgeCost(x, y)) {
                         insert(x, h(x));
-                    } else if (parent(y) != x && h(x) > h(y) + edgeCost(y, x)
+                    } else if (!isB(y, x) && h(x) > h(y) + edgeCost(y, x)
                             && nodeType(y) == NodeType.CLOSED && h(y) > k_old) {
                         insert(y, h(y));
                     }
@@ -206,6 +208,14 @@ public class DStar<V, E> implements Pathfinder<V, E> {
             return -1;
         }
         return ks.get(top);
+    }
+
+    private boolean isB(V x, V y) {
+        V parent = parent(x);
+        if (parent == null) {
+            return false;
+        }
+        return parent.equals(y);
     }
 
     private NodeType nodeType(V x) {

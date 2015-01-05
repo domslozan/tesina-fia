@@ -6,8 +6,7 @@ import graph.Path;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Stroke;
-import org.jgrapht.event.GraphEdgeChangeEvent;
-import org.jgrapht.event.GraphVertexChangeEvent;
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import tiling.Tile;
 
@@ -67,22 +66,12 @@ public class PathfinderWrapper implements Pathfinder<Tile, DefaultWeightedEdge> 
     }
 
     @Override
-    public void edgeAdded(GraphEdgeChangeEvent<Tile, DefaultWeightedEdge> gece) {
-        pf.edgeAdded(gece);
+    public DefaultDirectedWeightedGraph<Tile, DefaultWeightedEdge> getGraph() {
+        return pf.getGraph();
     }
 
     @Override
-    public void edgeRemoved(GraphEdgeChangeEvent<Tile, DefaultWeightedEdge> gece) {
-        pf.edgeRemoved(gece);
-    }
-
-    @Override
-    public void vertexAdded(GraphVertexChangeEvent<Tile> gvce) {
-        pf.vertexAdded(gvce);
-    }
-
-    @Override
-    public void vertexRemoved(GraphVertexChangeEvent<Tile> gvce) {
-        pf.vertexRemoved(gvce);
+    public void updateGraphEdge(DefaultWeightedEdge e, double weight) {
+        pf.updateGraphEdge(e, weight);
     }
 }

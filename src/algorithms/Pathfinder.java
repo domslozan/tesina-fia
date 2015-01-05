@@ -1,13 +1,13 @@
 package algorithms;
 
 import graph.Path;
-import org.jgrapht.WeightedGraph;
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 
 public interface Pathfinder<V, E> {
 
     Path<V, E> findPath(V start, V goal);
 
-    WeightedGraph<V, E> getGraph();
+    DefaultDirectedWeightedGraph<V, E> getGraph();
 
     void updateGraphEdge(E e, double weight);
 

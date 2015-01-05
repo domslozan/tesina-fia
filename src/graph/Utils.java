@@ -1,28 +1,13 @@
 package graph;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import org.jgrapht.Graph;
 import org.jgrapht.WeightedGraph;
 import tiling.Tile;
 
 public class Utils {
 
     private Utils() {
-    }
-
-    public static <V, E> Set<V> neighborsOf(Graph<V, E> graph, V s) {
-        Set<V> neighbors = new HashSet<V>();
-        for (E edge : graph.edgesOf(s)) {
-            V target = graph.getEdgeTarget(edge);
-            if (target != s) {
-                neighbors.add(target);
-            }
-        }
-        return neighbors;
     }
 
     public static <E> Map<E, Double> wrongEdges(WeightedGraph<Tile, E> graph, Tile vertex) {
@@ -33,9 +18,9 @@ public class Utils {
                 boolean blocked = vertex.getMap().isReallyBlocked(target);
                 double weight = graph.getEdgeWeight(e);
                 double real_weight = vertex.getMap().centerDistance(vertex, target);
-                if (blocked && weight < Double.MAX_VALUE) {
-                    we.put(e, Double.MAX_VALUE);
-                } else if ((!blocked && weight != real_weight)) {
+                if (blocked && weight < 1000000000d) {
+                    we.put(e, 1000000000d);
+                } else if ((!blocked && Math.abs(weight - real_weight) > 0.01)) {
                     we.put(e, real_weight);
                 }
             }

@@ -1,7 +1,6 @@
 package algorithms;
 
 import graph.Path;
-import graph.Utils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -11,10 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
-import org.jgrapht.WeightedGraph;
-import org.jgrapht.event.GraphEdgeChangeEvent;
-import org.jgrapht.event.GraphVertexChangeEvent;
-import org.jgrapht.graph.AbstractBaseGraph;
+import org.jgrapht.Graphs;
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 
 public class AStar<V, E> implements Pathfinder<V, E> {
 
@@ -22,7 +19,7 @@ public class AStar<V, E> implements Pathfinder<V, E> {
 
         NEW, OPEN, CLOSED
     }
-    private final WeightedGraph<V, E> graph;
+    private final DefaultDirectedWeightedGraph<V, E> graph;
     private V start, goal;
     private Heuristic<V> h;
     private final Map<V, Double> gs;
@@ -32,8 +29,8 @@ public class AStar<V, E> implements Pathfinder<V, E> {
     private final HeuristicFactory<V> hf;
     private List<PathfinderEventListener<V, E>> listeners;
 
-    public AStar(WeightedGraph<V, E> graph, HeuristicFactory<V> hf) {
-        this.graph = (WeightedGraph) ((AbstractBaseGraph) graph).clone();
+    public AStar(DefaultDirectedWeightedGraph<V, E> graph, HeuristicFactory<V> hf) {
+        this.graph = graph;
         this.hf = hf;
 
         this.open = new PriorityQueue<V>(11, queueComparator());
@@ -53,7 +50,7 @@ public class AStar<V, E> implements Pathfinder<V, E> {
     }
 
     @Override
-    public WeightedGraph<V, E> getGraph() {
+    public DefaultDirectedWeightedGraph<V, E> getGraph() {
         return graph;
     }
 
@@ -149,7 +146,7 @@ public class AStar<V, E> implements Pathfinder<V, E> {
             }
             closed.add(s);
             callCloseVertex(s);
-            for (V t : Utils.neighborsOf(graph, s)) {
+            for (V t : Graphs.predecessorListOf(graph, s)) {
                 if (!(nodeType(t) == NodeType.CLOSED)) {
                     if (!(nodeType(t) == NodeType.OPEN)) {
                         setG(t, Double.MAX_VALUE);

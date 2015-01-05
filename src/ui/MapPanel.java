@@ -1,8 +1,8 @@
 package ui;
 
+import algorithms.Pathfinder;
 import graph.Path;
-
-import graph.TilingGraphBuilder;
+import graph.Utils;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,39 +15,35 @@ import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputAdapter;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.ListenableDirectedWeightedGraph;
 import tiling.Tile;
 import tiling.WallListTileMap;
 
 public class MapPanel extends JPanel {
 
     private final WallListTileMap map;
-    private final List<PathfinderWrapper> pathfinders;
-    private final List<PathWithCreator> paths;
-    private final List<PFBufferedImage> fillImages;
+    private List<PathfinderWrapper> pathfinders;
+    private final Map<PathfinderWrapper, Path<Tile, DefaultWeightedEdge>> paths;
+    private final Map<PathfinderWrapper, BufferedImage> fillImages;
     private final FillListener listener;
     private Tile start, goal;
 
     public MapPanel(WallListTileMap map) {
         this.map = map;
-        ListenableDirectedWeightedGraph<Tile, DefaultWeightedEdge> graph = new TilingGraphBuilder(map).buildGraph();
-        this.pathfinders = PathfinderFactory.allPathfinders(graph);
 
-        this.paths = new ArrayList<PathWithCreator>();
-        this.fillImages = new ArrayList<PFBufferedImage>();
+        this.paths = new HashMap<PathfinderWrapper, Path<Tile, DefaultWeightedEdge>>();
+        this.fillImages = new HashMap<PathfinderWrapper, BufferedImage>();
         this.listener = new FillListener();
 
         this.setPreferredSize(new Dimension((int) map.getWidth(), (int) map.getHeight()));
         this.addMouseListener(newMouseListener());
-        for (PathfinderWrapper pf : pathfinders) {
-            pf.addListener(listener);
-        }
+
     }
 
     private MouseListener newMouseListener() {
@@ -76,16 +72,42 @@ public class MapPanel extends JPanel {
         paths.clear();
         fillImages.clear();
         listener.clear();
+        pathfinders = PathfinderFactory.allPathfinders(map);
+        for (PathfinderWrapper pf : pathfinders) {
+            pf.addListener(listener);
+        }
         if (start == null || goal == null) {
             return;
         }
         for (PathfinderWrapper pf : pathfinders) {
-            PFBufferedImage fill = new PFBufferedImage((int) map.getWidth(), (int) map.getHeight(), BufferedImage.TYPE_INT_ARGB, pf);
-            fillImages.add(fill);
+            BufferedImage fill = new BufferedImage((int) map.getWidth(), (int) map.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            fillImages.put(pf, fill);
             listener.setGraphics(pf, fill.createGraphics());
             Path<Tile, DefaultWeightedEdge> path = pf.findPath(start, goal);
-            paths.add(PathWithCreator.newPathWithCreator(path, pf));
+            Tile current = followPath(path, pf);
+            while (!(current == goal)) {
+                Path<Tile, DefaultWeightedEdge> restOfPath = pf.findPath(current, goal);
+                path = path.mergeWith(restOfPath);
+                current = followPath(restOfPath, pf);
+            }
+            paths.put(pf, path);
         }
+    }
+
+    private Tile followPath(Path<Tile, DefaultWeightedEdge> path, Pathfinder<Tile, DefaultWeightedEdge> pf) {
+        Iterator<Tile> i = path.iterator();
+        Tile n = i.next();
+        while (i.hasNext()) {
+            Map<DefaultWeightedEdge, Double> wrongEdges = Utils.wrongEdges(pf.getGraph(), n);
+            if (!wrongEdges.isEmpty()) {
+                for (Map.Entry<DefaultWeightedEdge, Double> e : wrongEdges.entrySet()) {
+                    pf.updateGraphEdge(e.getKey(), e.getValue());
+                }
+                return n;
+            }
+            n = i.next();
+        }
+        return n;
     }
 
     @Override
@@ -94,18 +116,21 @@ public class MapPanel extends JPanel {
 
         drawTiles((Graphics2D) g.create());
         drawWalls((Graphics2D) g.create());
+        drawHiddenWalls((Graphics2D) g.create());
 
-        drawFill((Graphics2D) g.create(), pathfinders.get(0));
+        //drawFill((Graphics2D) g.create(), );
 
         drawPaths((Graphics2D) g.create());
         drawEndpoints((Graphics2D) g.create());
 
-        
+
     }
 
     private void drawFill(Graphics2D g, PathfinderWrapper pfw) {
-        if (fillImages.isEmpty()) return;
-        BufferedImage fill = fillImages.get(2);
+        if (fillImages.isEmpty()) {
+            return;
+        }
+        BufferedImage fill = fillImages.get(pfw);
         g.drawImage(fill, null, null);
     }
 
@@ -131,6 +156,15 @@ public class MapPanel extends JPanel {
         }
     }
 
+    private void drawHiddenWalls(Graphics2D g) {
+        Iterator<Shape> i = map.hiddenWallIterator();
+        g.setColor(Color.GRAY);
+        while (i.hasNext()) {
+            Shape s = i.next();
+            g.fill(s);
+        }
+    }
+
     private void drawTiles(Graphics2D g) {
         Iterator<Tile> i = map.iterator();
         g.setColor(Color.GRAY);
@@ -140,13 +174,12 @@ public class MapPanel extends JPanel {
     }
 
     private void drawPaths(Graphics2D g) {
-        for (PathWithCreator p : paths) {
-            PathfinderWrapper pf = p.getCreator();
-            g.setColor(pf.getPathColor());
-            g.setStroke(pf.getPathStroke());
+        for (Map.Entry<PathfinderWrapper, Path<Tile, DefaultWeightedEdge>> e : paths.entrySet()) {
+            g.setColor(e.getKey().getPathColor());
+            g.setStroke(e.getKey().getPathStroke());
 
-            if (p.length() > 0) {
-                Iterator<Tile> i = p.iterator();
+            if (e.getValue().length() > 0) {
+                Iterator<Tile> i = e.getValue().iterator();
                 Point2D last = i.next().getCenter();
                 while (i.hasNext()) {
                     Point2D n = i.next().getCenter();
