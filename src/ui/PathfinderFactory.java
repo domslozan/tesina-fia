@@ -5,6 +5,7 @@ import algorithms.DStar;
 import algorithms.Dijkstra;
 import algorithms.EuclideanDistanceHeuristicFactory;
 import algorithms.OctileHeuristicFactory;
+import algorithms.ThetaStar;
 import graph.TilingGraphBuilder;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -23,7 +24,8 @@ public class PathfinderFactory {
 
         DIJKSTRA, ASTAR_ED, 
         DSTAR,
-        ASTAR_OD
+        ASTAR_OD,
+        THETA_STAR
     }
 
     public static PathfinderWrapper newPathfinder(Algorithm algo, DefaultDirectedWeightedGraph<Tile, DefaultWeightedEdge> graph) {
@@ -48,6 +50,11 @@ public class PathfinderFactory {
                         new AStar<Tile, DefaultWeightedEdge>(graph, new OctileHeuristicFactory()),
                         "A* with octile distance heuristic",
                         Color.MAGENTA);
+            case THETA_STAR:
+                return new PathfinderWrapper(
+                        new ThetaStar(graph),
+                        "Theta*",
+                        Color.YELLOW);
             default:
                 throw new IllegalArgumentException();
         }

@@ -1,5 +1,6 @@
 package tiling;
 
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
@@ -33,4 +34,6 @@ public interface TileMap extends Iterable<Tile> {
     int getTileWidth();
 
     int getTileHeight();
+
+    boolean intersectsBlocked(Line2D l);
 }

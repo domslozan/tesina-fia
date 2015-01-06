@@ -35,7 +35,9 @@ public class MapPanel extends JPanel {
     private Tile start, goal;
     private MapLegend legend;
 
+
     public MapPanel(WallListTileMap map) {
+        super();
         this.map = map;
 
         this.paths = new HashMap<PathfinderWrapper, Path<Tile, DefaultWeightedEdge>>();
@@ -161,6 +163,7 @@ public class MapPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
 
         drawTiles((Graphics2D) g.create());
         drawWalls((Graphics2D) g.create());

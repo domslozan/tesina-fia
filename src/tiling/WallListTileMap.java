@@ -1,6 +1,8 @@
 package tiling;
 
 import java.awt.Shape;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -93,6 +95,21 @@ public class WallListTileMap extends BaseTileMap {
         return false;
     }
 
+    @Override
+    public boolean intersectsBlocked(Line2D l) {
+        for (Shape s : walls) {
+            if (((Rectangle2D) s).intersectsLine(l) ) {
+                return true;
+            }
+        }
+        for (Shape s : hiddenWalls) {
+            if (((Rectangle2D) s).intersectsLine(l) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public Iterator<Shape> wallIterator() {
         return walls.iterator();
     }

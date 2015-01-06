@@ -3,6 +3,7 @@ package graph;
 import java.util.HashMap;
 import java.util.Map;
 import org.jgrapht.WeightedGraph;
+import org.jgrapht.graph.DefaultWeightedEdge;
 import tiling.Tile;
 
 public class Utils {
@@ -10,9 +11,9 @@ public class Utils {
     private Utils() {
     }
 
-    public static <E> Map<E, Double> wrongEdges(WeightedGraph<Tile, E> graph, Tile vertex) {
-        HashMap<E, Double> we = new HashMap<E, Double>();
-        for (E e : graph.edgesOf(vertex)) {
+    public static Map<DefaultWeightedEdge, Double> wrongEdges(WeightedGraph<Tile, DefaultWeightedEdge> graph, Tile vertex) {
+        HashMap<DefaultWeightedEdge, Double> we = new HashMap<DefaultWeightedEdge, Double>();
+        for (DefaultWeightedEdge e : graph.edgesOf(vertex)) {
             if (graph.getEdgeSource(e).equals(vertex)) {
                 Tile target = graph.getEdgeTarget(e);
                 boolean blocked = vertex.getMap().isReallyBlocked(target);
