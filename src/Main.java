@@ -36,13 +36,15 @@ public class Main {
 
          walls.add(new Rectangle2D.Double(700, 150, 150, 100));
        walls.add(new Rectangle2D.Double(700, 150 + 100 + 50, 150, 100));
+
+       walls.add(new Rectangle2D.Double(700 + 150 - 20, 150 + 100, 20, 50));
         return walls;
     }
 
     private static List<Shape> hiddenWalls() {
         List<Shape> walls = new ArrayList<Shape>();
       
-       walls.add(new Rectangle2D.Double(700 + 150 - 20, 150 + 100, 20, 50));
+       //walls.add(new Rectangle2D.Double(700 + 150 - 20, 150 + 100, 20, 50));
         return walls;
     }
 

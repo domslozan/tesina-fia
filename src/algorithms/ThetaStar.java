@@ -169,7 +169,7 @@ public class ThetaStar implements Pathfinder<Tile, DefaultWeightedEdge> {
     }
 
     private void updateVertex(Tile s, Tile t) {
-        Line2D path2 = new Line2D.Double(s.getCenter(), t.getCenter());
+        Line2D path2 = new Line2D.Double(getParent(s).getCenter(), t.getCenter());
         if (!s.getMap().intersectsBlocked(path2)) {
             if (getG(getParent(s)) + c(getParent(s), t) < getG(t)) {
                 setG(t, getG(getParent(s)) + c(getParent(s), t));
