@@ -140,7 +140,7 @@ public class ThetaStar implements Pathfinder<Tile, DefaultWeightedEdge> {
         setG(start, 0);
         setParent(start, start);
         open.offer(start);
-        callOpenVertex(goal);
+        callOpenVertex(start);
 
         while (!open.isEmpty()) {
             Tile s = open.poll();

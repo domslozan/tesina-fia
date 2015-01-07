@@ -22,34 +22,34 @@ public class PathfinderFactory {
 
     public static enum Algorithm {
 
-        DIJKSTRA, ASTAR_ED, 
-        DSTAR,
-        ASTAR_OD,
+        //DIJKSTRA, ASTAR_ED,
+        //DSTAR,
+        //ASTAR_OD,
         THETA_STAR
     }
 
     public static PathfinderWrapper newPathfinder(Algorithm algo, DefaultDirectedWeightedGraph<Tile, DefaultWeightedEdge> graph) {
         switch (algo) {
-            case DIJKSTRA:
-                return new PathfinderWrapper(
-                        new Dijkstra<Tile, DefaultWeightedEdge>(graph),
-                        "Dijkstra",
-                        Color.ORANGE);
-            case DSTAR:
-                return new PathfinderWrapper(
-                        new DStar<Tile, DefaultWeightedEdge>(graph),
-                        "D*",
-                        Color.GREEN);
-            case ASTAR_ED:
-                return new PathfinderWrapper(
-                        new AStar<Tile, DefaultWeightedEdge>(graph, new EuclideanDistanceHeuristicFactory()),
-                        "A* with euclidean distance heuristic",
-                        Color.CYAN);
-            case ASTAR_OD:
-                return new PathfinderWrapper(
-                        new AStar<Tile, DefaultWeightedEdge>(graph, new OctileHeuristicFactory()),
-                        "A* with octile distance heuristic",
-                        Color.MAGENTA);
+//            case DIJKSTRA:
+//                return new PathfinderWrapper(
+//                        new Dijkstra<Tile, DefaultWeightedEdge>(graph),
+//                        "Dijkstra",
+//                        Color.ORANGE);
+           // case DSTAR:
+            //    return new PathfinderWrapper(
+             //           new DStar<Tile, DefaultWeightedEdge>(graph),
+                 //       "D*",
+               //         Color.GREEN);
+//            case ASTAR_ED:
+//                return new PathfinderWrapper(
+//                        new AStar<Tile, DefaultWeightedEdge>(graph, new EuclideanDistanceHeuristicFactory()),
+//                        "A* with euclidean distance heuristic",
+//                        Color.CYAN);
+//            case ASTAR_OD:
+//                return new PathfinderWrapper(
+//                        new AStar<Tile, DefaultWeightedEdge>(graph, new OctileHeuristicFactory()),
+//                        "A* with octile distance heuristic",
+//                        Color.MAGENTA);
             case THETA_STAR:
                 return new PathfinderWrapper(
                         new ThetaStar(graph),

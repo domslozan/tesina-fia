@@ -102,11 +102,11 @@ public class WallListTileMap extends BaseTileMap {
                 return true;
             }
         }
-        for (Shape s : hiddenWalls) {
+        /*for (Shape s : hiddenWalls) {
             if (((Rectangle2D) s).intersectsLine(l) ) {
                 return true;
             }
-        }
+        }*/
         return false;
     }
     

@@ -21,7 +21,7 @@ public class Main {
 
     private Main() {
     }
-    private static final double TILE_SIZE = 10;
+    private static final double TILE_SIZE = 10*2;
     private static WallListTileMap map;
 
     private static List<Shape> walls() {
@@ -47,7 +47,7 @@ public class Main {
     }
 
     public static void main(String[] argv) {
-        map = new WallListTileMap(TILE_SIZE, 120, 80, 0, 0, walls(),hiddenWalls());
+        map = new WallListTileMap(TILE_SIZE, 120/2, 80/2, 0, 0, walls(),hiddenWalls());
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override

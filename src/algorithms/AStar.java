@@ -137,7 +137,7 @@ public class AStar<V, E> implements Pathfinder<V, E> {
         setG(start, 0);
         setParent(start, null);
         open.offer(start);
-        callOpenVertex(goal);
+        callOpenVertex(start);
 
         while (!open.isEmpty()) {
             V s = open.poll();
